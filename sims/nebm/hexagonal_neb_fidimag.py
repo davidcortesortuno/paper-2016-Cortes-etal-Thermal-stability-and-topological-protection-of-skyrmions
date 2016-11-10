@@ -21,7 +21,7 @@ parser.add_argument('hex_a', help='Lattice constant',
 # NEB Simulation --------------------------------------------------------------
 
 parser.add_argument('neb_steps', help='Number of steps for the '
-                    'Cartesian or Spherical NEB method')
+                    'Geodesic or Cartesian or Spherical NEB method')
 
 parser.add_argument('save_vtk', help='Number specifying that the vtk files'
                     ' are going to be saved every *save_vtk* number of steps',
@@ -79,7 +79,7 @@ parser.add_argument('--B', help='External magnetic field perpendicular to the'
                     type=float)
 
 parser.add_argument('--Demag', help='Add this option to use dipolar '
-                    'interactions (TESTING)',
+                    'interactions',
                     action='store_true')
 
 parser.add_argument('--alignment', help='Hexagonal lattice alignment '
@@ -111,13 +111,13 @@ method.add_argument('--interpolation',
                     'between the i and (i+1)th states of the Energy band.'
                     ' Thus the number of arguments is always odd.',
                     nargs='+',
-                    metavar=('FILE1', 'N_INTERPS', 'FILE2', 'etc')
+                    # metavar=('FILE1', 'N_INTERPS', 'FILE2', 'etc')
                     )
 
 method.add_argument('--images_files',
                     help='Use all the *npy* files from the specified folder '
                     'path for the initial states of the Energy Band. File '
-                    'names must be sorted as *image_{}.pny* with {} as the '
+                    'names must be sorted as *image_().npy* with () as the '
                     'number in the sequence of images in the Energy Band, '
                     'and include the initial and final states',
                     metavar=('NPY_FILES_PATH'))
@@ -139,9 +139,9 @@ from fidimag.atomistic import Zeeman
 # Import physical constants from fidimag
 import fidimag.common.constant as const
 
-from fidimag.common.neb_cartesian import NEB_Sundials
-from fidimag.common.neb_spherical import NEB_Sundials as NEB_Sundials_spherical
 from fidimag.common.nebm_geodesic import NEBM_Geodesic as NEBM_Geodesic
+from fidimag.common.nebm_geodesic import NEBM_Cartesian as NEBM_Cartesian
+from fidimag.common.nebm_geodesic import NEBM_Spherical as NEBM_Sherical
 
 import os
 import re
@@ -276,49 +276,31 @@ else:
 
 # ----------------------------------------------------------------------------
 
-# In Fidimag we only use Cartesian coordinates, but the interpolations are
+# In Fidimag when using Godesic/Cartesian coordinates, the interpolations are
 # performed in Spherical coordinates
 
 if args.coordinates == 'Cartesian':
-    neb = NEB_Sundials(sim,
-                       images,
-                       interpolations=interpolations,
-                       spring=args.neb_k,
-                       name=args.sim_name,
-                       climbing_image=args.climbing_image
-                       )
+    neb_method = NEBM_Cartesian
+if args.coordinates == 'Spherical':
+    neb_method = NEBM_Spherical
+if args.coordinates == 'Geodesic':
+    neb_method = NEBM_Geodesic
 
-elif args.coordinates == 'Spherical':
-    neb = NEB_Sundials_spherical(sim,
-                                 images,
-                                 interpolations=interpolations,
-                                 spring=args.neb_k,
-                                 name=args.sim_name,
-                                 climbing_image=args.climbing_image
-                                 )
-
-elif args.coordinates == 'Geodesic':
-    neb = NEBM_Geodesic(sim,
-                        images,
-                        interpolations=interpolations,
-                        spring_constant=args.neb_k,
-                        name=args.sim_name
-                        )
+neb = neb_method(sim,
+                 images,
+                 interpolations=interpolations,
+                 spring_constant=args.neb_k,
+                 name=args.sim_name,
+                 climbing_image=args.climbing_image,
+                 openmp=True
+                 )
 
 if args.tols:
     neb.create_integrator()
     neb.set_tols(rtol=args.tols[0], atol=args.tols[1])
 
-if args.coordinates == 'Geodesic':
-    # Relax the system with the NEB mehtod
-    neb.relax(max_iterations=int(args.neb_steps),
-              save_vtks_every=args.save_vtk,
-              save_npys_every=args.save_npy,
-              stopping_dYdt=args.stopping_dmdt)
-
-else:
-    # Relax the system with the NEB mehtod
-    neb.relax(max_steps=int(args.neb_steps),
-              save_vtk_steps=args.save_vtk,
-              save_npy_steps=args.save_npy,
-              stopping_dmdt=args.stopping_dmdt)
+# Relax the system with the NEB mehtod
+neb.relax(max_iterations=int(args.neb_steps),
+          save_vtks_every=args.save_vtk,
+          save_npys_every=args.save_npy,
+          stopping_dYdt=args.stopping_dmdt)
