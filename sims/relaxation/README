@@ -2,14 +2,11 @@ Relaxation of magnetic nanotracks made of hexagonally arranged atoms, using
 discrete spin simulations.  The simulations are started calling the Python
 script *hexagonal_fidimag.py* together with different parameters, i.e. by doing
 
-```
     python ./hexagonal_fidimag.py -parameters
-```
 
 If we use the help with the *-h* parameter, the script shows all options
 available
 
-```
     usage: hexagonal_fidimag.py [-h] [--D D] [--J J] [--mu_s MU_S] [--k_u K_U]
                             [--B B] [--Demag] [--FullDemag] [--PBC_2D]
                             (--initial_state_skyrmion_down SK_INITIAL_RADIUS | 
@@ -84,14 +81,11 @@ available
                             Specify maximum number of steps for the relaxation
                             (default is 5000)
       --no_precession       To remove LLG precesion term
-```
 
 Most of the simulations are started with a bash script, where the options are
 recorded. For example, if we have *my_simulation.sh*, we only do
 
-```
     bash my_simulation.sh
-```
 
 in a terminal. The bash scripts are located in this folder and the output files
 are saved in ordered folders, such as ``vtks``, ``npys``, etc. The scripts are
