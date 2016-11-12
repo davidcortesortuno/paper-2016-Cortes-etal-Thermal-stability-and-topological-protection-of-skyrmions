@@ -292,10 +292,10 @@ sim = Sim(mesh, name=args.sim_name)
 
 # sim.set_tols(rtol=1e-10, atol=1e-14)
 sim.alpha = args.alpha
-# sim.gamma = 2.211e5
+# sim.driver.gamma = 2.211e5
 
 if args.no_precession:
-    sim.do_precession = False
+    sim.driver.do_precession = False
 
 # Material parameters -----------------------------------------------------
 
@@ -470,13 +470,12 @@ if args.preview:
 
 else:
     # Fidimag automatically saves the last state
-    sim.do_procession = False
     if args.tols:
-        sim.set_tols(rtol=args.tols[0], atol=args.tols[1])
-    sim.relax(dt=1e-13, stopping_dmdt=args.stopping_dmdt,
-              max_steps=args.max_steps,
-              save_m_steps=args.save_files,
-              save_vtk_steps=args.save_files)
+        sim.driver.set_tols(rtol=args.tols[0], atol=args.tols[1])
+    sim.driver.relax(dt=1e-13, stopping_dmdt=args.stopping_dmdt,
+                     max_steps=args.max_steps,
+                     save_m_steps=args.save_files,
+                     save_vtk_steps=args.save_files)
 
     # Save final states
     sim.save_m()

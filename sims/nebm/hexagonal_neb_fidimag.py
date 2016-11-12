@@ -109,7 +109,9 @@ method.add_argument('--interpolation',
                     'file1 number_interps file2 number_interps file3 ...'
                     'Where number_interps is the number of interpolations'
                     'between the i and (i+1)th states of the Energy band.'
-                    ' Thus the number of arguments is always odd.',
+                    ' Thus the number of arguments is always odd. If file_x '
+                    'is passed as a path to a folder, it is assumed that '
+                    'there is only a single file in that folder.',
                     nargs='+',
                     # metavar=('FILE1', 'N_INTERPS', 'FILE2', 'etc')
                     )
@@ -238,12 +240,23 @@ The frequency of how vtu or npy files are saved is optional
 # SIMULATION  ----------------------------------------------------------------
 
 # Interpolations and initial images ------------------------------------------
+def load_state(path):
+    if os.path.isdir(path):
+        if not path.endswith('/'):
+            path += '/'
+        _file = glob.glob(path + '*.npy')[0]
+    else:
+        _file = path
+
+    np.load(_file)
+
+
 
 if args.interpolation:
     # Load the states from every 2 arguments of
     # the --interpolation option and the numbers from every  two arguments
     # starting from the 1st element of the list
-    images = [np.load(state) for state in args.interpolation[::2]]
+    images = [load_state(state) for state in args.interpolation[::2]]
     interpolations = [int(num_interps)
                       for num_interps in args.interpolation[1::2]]
 
