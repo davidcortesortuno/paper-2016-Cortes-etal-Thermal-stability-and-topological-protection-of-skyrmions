@@ -142,11 +142,12 @@ from fidimag.atomistic import Zeeman
 import fidimag.common.constant as const
 
 from fidimag.common.nebm_geodesic import NEBM_Geodesic as NEBM_Geodesic
-from fidimag.common.nebm_geodesic import NEBM_Cartesian as NEBM_Cartesian
-from fidimag.common.nebm_geodesic import NEBM_Spherical as NEBM_Sherical
+from fidimag.common.nebm_cartesian import NEBM_Cartesian as NEBM_Cartesian
+from fidimag.common.nebm_spherical import NEBM_Spherical as NEBM_Sherical
 
 import os
 import re
+import glob
 
 mu0 = 4 * np.pi * 1e-7
 

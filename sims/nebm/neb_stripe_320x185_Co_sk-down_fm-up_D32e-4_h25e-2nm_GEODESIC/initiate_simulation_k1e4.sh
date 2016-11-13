@@ -12,9 +12,9 @@ python ../hexagonal_neb_fidimag.py \
         --k_u 0.0676 \
         --unit_length "1e-9" \
         --Demag \
-        --interpolation ../../relaxation_fidimag_atomistic/npys/stripe_320x185_Co_sk-down_D32e-4_h25e-2nm_npys/m_474.npy \
+        --interpolation ../../relaxation/npys/stripe_320x185_Co_sk-down_D32e-4_h25e-2nm_npys \
                         26 \
-                        ../../relaxation_fidimag_atomistic/npys/stripe_320x185_Co_fm-up_D32e-4_h25e-2nm_npys/m_366.npy \
+                        ../../relaxation/npys/stripe_320x185_Co_fm-up_D32e-4_h25e-2nm_npys \
         --neb_k 1e4 \
         --stopping_dmdt 0.00001 \
         --coordinates Geodesic
