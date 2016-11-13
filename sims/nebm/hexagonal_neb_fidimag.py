@@ -121,7 +121,10 @@ method.add_argument('--images_files',
                     'path for the initial states of the Energy Band. File '
                     'names must be sorted as *image_().npy* with () as the '
                     'number in the sequence of images in the Energy Band, '
-                    'and include the initial and final states',
+                    'and include the initial and final states. If the path '
+                    'to the folder finishes in _LAST, we search the largest '
+                    'number among the *folders* which finish in _{step}, '
+                    'where step is a number',
                     metavar=('NPY_FILES_PATH'))
 
 # -----------------------------------------------------------------------------
@@ -265,6 +268,16 @@ if args.interpolation:
 
 elif args.images_files:
     # Load the states from the specified npys folder in --images_files
+    # If the folder finihes with _LAST, we search the largest number
+    # among the folders which we assume finish with a number instead of LAST
+    if args.images_files.endswith('_LAST'):
+        folders = glob.glob(args.images_files[:-4] + '*')
+        folders = sorted(folders,
+                         key=lambda f: int(f[len(args.images_files[:-4]):])
+                         )
+
+        args.images_files = folders[-1]
+
     # We will sort the files using the number in their names
     # assuming that they have the structure:
     # 'image_1.npy', 'image_13.npy', etc.

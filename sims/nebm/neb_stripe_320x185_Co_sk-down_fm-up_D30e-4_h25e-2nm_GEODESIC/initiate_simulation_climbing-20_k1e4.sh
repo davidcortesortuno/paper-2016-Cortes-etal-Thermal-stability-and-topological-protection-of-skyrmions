@@ -12,7 +12,7 @@ python ../hexagonal_neb_fidimag.py \
         --k_u 0.0676 \
         --unit_length "1e-9" \
         --Demag \
-        --images_files "npys/neb_stripe_320x185_Co_sk-down_fm-up_D30e-4_h25e-2nm_k1e4_GEODESIC_603/" \
+        --images_files "npys/neb_stripe_320x185_Co_sk-down_fm-up_D30e-4_h25e-2nm_k1e4_GEODESIC_LAST" \
         --neb_k 1e4 \
         --stopping_dmdt 0.00001 \
         --coordinates Geodesic \
