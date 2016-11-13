@@ -291,7 +291,7 @@ else:
 sim = Sim(mesh, name=args.sim_name)
 
 # sim.set_tols(rtol=1e-10, atol=1e-14)
-sim.alpha = args.alpha
+sim.driver.alpha = args.alpha
 # sim.driver.gamma = 2.211e5
 
 if args.no_precession:
