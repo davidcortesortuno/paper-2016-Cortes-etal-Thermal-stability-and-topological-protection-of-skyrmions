@@ -71,13 +71,18 @@ description of the script:
                             number_interps file3 ...Where number_interps is the
                             number of interpolationsbetween the i and (i+1)th
                             states of the Energy band. Thus the number of
-                            arguments is always odd.
+                            arguments is always odd. If file_x is passed as a path
+                            to a folder, it is assumed that there is only a single
+                            file in that folder.
       --images_files NPY_FILES_PATH
                             Use all the *npy* files from the specified folder path
                             for the initial states of the Energy Band. File names
                             must be sorted as *image_().npy* with () as the number
                             in the sequence of images in the Energy Band, and
-                            include the initial and final states
+                            include the initial and final states. If the path to
+                            the folder finishes in _LAST, we search the largest
+                            number among the *folders* which finish in _{step},
+                            where step is a number
 
 
 The NEBM simulations for Cobalt nanotracks are provided as bash scripts in the
