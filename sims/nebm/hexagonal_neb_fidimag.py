@@ -146,7 +146,7 @@ import fidimag.common.constant as const
 
 from fidimag.common.nebm_geodesic import NEBM_Geodesic as NEBM_Geodesic
 from fidimag.common.nebm_cartesian import NEBM_Cartesian as NEBM_Cartesian
-from fidimag.common.nebm_spherical import NEBM_Spherical as NEBM_Sherical
+from fidimag.common.nebm_spherical import NEBM_Spherical as NEBM_Spherical
 
 import os
 import re
@@ -177,7 +177,7 @@ sim = Sim(mesh, name=args.sim_name)
 
 # sim.set_tols(rtol=1e-10, atol=1e-14)
 if args.alpha:
-    sim.alpha = args.alpha
+    sim.driver.alpha = args.alpha
 # sim.gamma = 2.211e5
 
 # Material parameters ---------------------------------------------------------
