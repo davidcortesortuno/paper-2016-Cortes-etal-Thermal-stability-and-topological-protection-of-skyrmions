@@ -6,7 +6,7 @@ Band method (NEBM) atomistic simulations, using
 
 ## System
 
-<img src="figs/skyrmion.jpg" width="200" align="center">
+<img src="figs/skyrmion.jpg" width="800">
 
 The system under study is an ``80 nm X 40 nm X 0.25 nm`` cobalt nanotrack which
 is translated into a lattice of ``320 X 185`` spins which are hexagonally
@@ -66,6 +66,8 @@ magnetic configuration and DMI constant. Hence, if we want the simulations for
 
 ## 1. Boundary Annihilation
 
+<img src="figs/boundary_annihilation.jpg" width="800">
+
 For this we need to manually generate the initial state for the NEBM. Thus,
 following the previous example, if we want to run the simulation for 
 ``D=0.721 meV``, we need to 
@@ -82,6 +84,8 @@ the data of the energy bands for every iteration of the NEBM.
 
 ## 2. Linear interpolations
 
+<img src="figs/singularity.jpg" width="800">
+
 For this case, the initial state for the NEBM, which are linear interpolations
 on the spherical angles that define the spins directions, is automatically
 generated.  Thus it is only necessary to move to the simulation folder, for
@@ -92,6 +96,8 @@ simulations will relax towards a skyrmion collapse and others to the
 destruction mediated by a singularity.
 
 ## 3. Climbing image NEBM
+
+<img src="figs/collapse.jpg" width="800">
 
 These simulations are the continuation of the **Linear interpolations**
 simulations.  Since the climbing image is based on taking the largest energy
