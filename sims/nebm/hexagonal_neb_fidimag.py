@@ -243,6 +243,7 @@ The frequency of how vtu or npy files are saved is optional
 
 # SIMULATION  ----------------------------------------------------------------
 
+
 # Interpolations and initial images ------------------------------------------
 def load_state(path):
     if os.path.isdir(path):
@@ -252,9 +253,7 @@ def load_state(path):
     else:
         _file = path
 
-    np.load(_file)
-
-
+    return np.load(_file)
 
 if args.interpolation:
     # Load the states from every 2 arguments of
