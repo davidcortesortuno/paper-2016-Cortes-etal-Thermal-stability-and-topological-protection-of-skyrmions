@@ -1,3 +1,20 @@
+# -----------------------------------------------------------------------------
+import argparse
+
+parser = argparse.ArgumentParser(description='Plot library for the NEBM data')
+
+parser.add_argument('--method', help='boundary, linear_interpolations, climbing',
+                    required=True)
+
+parser.add_argument('--D_list', help='List of DMI values in units of 1e-4 Jm**-2'
+                    ' , e.g. --D_list 28 32',
+                    required=True, nargs='+')
+
+# Parser arguments
+args = parser.parse_args()
+
+# -----------------------------------------------------------------------------
+
 import numpy as np
 import os
 import shutil
@@ -20,31 +37,29 @@ WORKDIR = os.path.dirname(os.path.realpath(__file__)) + '/'
 
 # -----------------------------------------------------------------------------
 
-matplotlib.rcParams.update({'font.size': 28,
-                            'font.sans-serif': ['Lato'],
-                            'font.weight': 100
-                            })
-
-matplotlib.rcParams.update({'xtick.labelsize': 28,
-                            'ytick.labelsize': 28,
-                            "xtick.direction": 'out',
-                            "ytick.direction": 'out',
-                            'axes.labelsize': 28})
-
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Lato']
+plt.rcParams['font.serif'] = ['Lato']
+plt.rcParams['font.cursive'] = ['Lato']
 plt.rcParams['font.weight'] = 100
 plt.rcParams["text.latex.unicode"] = True
 plt.rcParams["xtick.direction"] = 'out'
 plt.rcParams["ytick.direction"] = 'out'
 
 # Working:
-matplotlib.rcParams['mathtext.fontset'] = 'custom'
-matplotlib.rcParams['mathtext.it'] = 'sans:italic'
-matplotlib.rcParams['mathtext.bf'] = 'sans:bold:italic'
-matplotlib.rcParams['mathtext.sf'] = 'sans'
-matplotlib.rcParams['mathtext.default'] = 'it'
-matplotlib.rcParams['mathtext.rm'] = 'sans'
+plt.rcParams['mathtext.fontset'] = 'custom'
+plt.rcParams['mathtext.it'] = 'sans:italic'
+plt.rcParams['mathtext.bf'] = 'sans:bold:italic'
+plt.rcParams['mathtext.sf'] = 'sans'
+plt.rcParams['mathtext.default'] = 'it'
+plt.rcParams['mathtext.rm'] = 'sans'
+
+plt.rcParams['font.size'] = 28
+plt.rcParams['axes.labelsize'] = 28
+plt.rcParams['legend.fontsize'] = 26
+
+plt.rcParams['axes.formatter.use_mathtext'] = True
+plt.rcParams.update()
 
 
 def hex_to_rgb(value):
@@ -160,10 +175,8 @@ def methods(method, D):
 # Data ------------------------------------------------------------------------
 
 mesh = HexagonalMesh(0.125, 320, 185, unit_length=1e-9, alignment='square')
-method = 'linear_interpolations'
-D_list = ['32']
 
-for D in D_list:
+for D in args.D_list:
 
     sim = Sim(mesh)
     sim.set_mu_s(0.846 * const.mu_B)
@@ -172,8 +185,8 @@ for D in D_list:
     sim.add(DMI(DMIc[D] * const.meV, dmi_type='interfacial'))
     sim.add(Anisotropy(0.0676 * const.meV, axis=[0, 0, 1]))
 
-    images = [np.load(os.path.join(methods(method, D), _file))
-              for _file in sorted(os.listdir(methods(method, D)),
+    images = [np.load(os.path.join(methods(args.method, D), _file))
+              for _file in sorted(os.listdir(methods(args.method, D)),
                                   key=lambda f: int(re.search('\d+', f).group(0))
                                   )]
 
@@ -194,7 +207,7 @@ markers = ['o', '^', 's', '*', 'h', 'v']
 f = plt.figure(figsize=(8, 8/1.6))
 ax = f.add_subplot(111)
 
-for i, D in enumerate(D_list):
+for i, D in enumerate(args.D_list):
     c, = ax.plot(interp_data[D][0], interp_data[D][1], '-', lw=2)
     ax.plot(nebm_data[D][0], nebm_data[D][1], 'o', color=c.get_color(),
             ms=10, marker=markers[i], label=str(-DMIc[D])
@@ -204,7 +217,7 @@ for i, D in enumerate(D_list):
 # plt.xlim([0, 200])
 
 plt.grid()
-l = plt.legend(title=r'$D$' + ' (meV)', loc='lower left', 
+l = plt.legend(title=r'$D$' + ' (meV)', loc='lower left',
                ncol=3, bbox_to_anchor=(0, 1.02, 1, 1),
                mode='expand', borderaxespad=0., fontsize=20)
 for mark in l.legendHandles:
@@ -212,7 +225,8 @@ for mark in l.legendHandles:
     mark.set_linewidth(2)
     mark.lineStyles['-'] = '_draw_solid'
 
-plt.xlabel(r'Distance from ' + r'$\mathbf{Y}_{0}$')
-plt.ylabel(r'Energy (eV)')
+plt.xlabel(r'$\mathrm{Distance}\,\,\mathrm{from}\,\,\mathbf{Y}_{0}$')
+plt.ylabel(r'$\mathrm{Energy}\,\,\mathrm{(eV)}$')
 
-plt.savefig('ebarriers_skdisp_D_k1e4.pdf', bbox_inches='tight')
+plt.savefig('energy_bands_D_k1e4_{}.pdf'.format(args.method),
+            bbox_inches='tight')
