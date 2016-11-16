@@ -1,7 +1,19 @@
+# If it is not defined, we set the DMI value here
 DMI?=32
+
 SIM_FM_FILE=stripe_320x185_Co_fm-up_D${DMI}e-4_h25e-2nm.sh
 SIM_SK_FILE=stripe_320x185_Co_sk-down_D${DMI}e-4_h25e-2nm.sh
 NEBM_SIM_FOLDER=neb_stripe_320x185_Co_sk-down_fm-up_D${DMI}e-4_h25e-2nm_GEODESIC
+
+# Climbing images
+CI26=21
+CI28=21
+CI30=20
+CI32=15
+CI34=15
+CI36=15
+
+CI = $(CI${DMI})
 
 # -----------------------------------------------------------------------------
 
@@ -45,11 +57,17 @@ nebm:
 		nebm /bin/bash -c "cd nebm/${NEBM_SIM_FOLDER} && bash initiate_simulation_k1e4.sh"
 	@cd ../sims && \
 		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
-		nebm /bin/bash -c "cd nebm/${NEBM_SIM_FOLDER} && bash initiate_simulation_climbing-23_k1e4.sh"
+		nebm /bin/bash -c "cd nebm/${NEBM_SIM_FOLDER} && bash initiate_simulation_climbing-${CI}_k1e4.sh"
 
 plot_nebm:
 	@echo "Plotting data from NEBM simulation with D = ${DMI}e-4 Jm**-2"
 	@echo "------------------------------------------------------------"
 	@cd ../ && \
 		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
-		nebm /bin/bash -c "python plot/plot_energy_bands.py --method ${METHOD} --D_list ${DMI}"
+		nebm /bin/bash -c "python plot/plot_energy_bands.py --method boundary --D_list ${DMI} --snapshots"
+	@cd ../ && \
+		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
+		nebm /bin/bash -c "python plot/plot_energy_bands.py --method linear_interpolations --D_list ${DMI} --snapshots"
+	@cd ../ && \
+		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
+		nebm /bin/bash -c "python plot/plot_energy_bands.py --method climbing --D_list ${DMI} --snapshots"

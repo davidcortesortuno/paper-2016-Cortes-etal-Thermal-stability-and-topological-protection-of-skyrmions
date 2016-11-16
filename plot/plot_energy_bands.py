@@ -10,14 +10,17 @@ parser.add_argument('--D_list', help='List of DMI values in units of 1e-4 Jm**-2
                     ' , e.g. --D_list 28 32',
                     required=True, nargs='+')
 
+parser.add_argument('--snapshots', help='Set this option to plot snapshots',
+                    action='store_true')
+
 # Parser arguments
 args = parser.parse_args()
 
 # -----------------------------------------------------------------------------
 
+import sys
 import numpy as np
 import os
-import shutil
 import glob
 import re
 from cycler import cycler
@@ -34,6 +37,9 @@ import fidimag.common.constant as const
 from fidimag.common.nebm_geodesic import NEBM_Geodesic
 
 WORKDIR = os.path.dirname(os.path.realpath(__file__)) + '/'
+SAVEDIR = 'nebm_figures/'
+if not os.path.exists(SAVEDIR):
+    os.makedirs(SAVEDIR)
 
 # -----------------------------------------------------------------------------
 
@@ -228,5 +234,87 @@ for mark in l.legendHandles:
 plt.xlabel(r'$\mathrm{Distance}\,\,\mathrm{from}\,\,\mathbf{Y}_{0}$')
 plt.ylabel(r'$\mathrm{Energy}\,\,\mathrm{(eV)}$')
 
-plt.savefig('energy_bands_D_k1e4_{}.pdf'.format(args.method),
-            bbox_inches='tight')
+if len(args.D_list) > 1:
+    plt.savefig(SAVEDIR + 'energy_bands_D_k1e4_{}.pdf'.format(args.method),
+                bbox_inches='tight')
+else:
+    plt.savefig(SAVEDIR + 'energy_bands_D{}_k1e4_{}.pdf'.format(args.D_list[0],
+                                                                args.method),
+                bbox_inches='tight')
+
+# Snapshots -------------------------------------------------------------------
+# We will use the simulation object created before (we only care for the
+# spins field and not the interactions)"
+coords = mesh.coordinates
+
+
+def snapshot(sim, image, D, method):
+    sim.set_m(np.load(methods(method, D)
+                      + '/image_{:06}.npy'.format(image)
+                      ))
+
+n_images = len(os.listdir(methods(args.method, args.D_list[0])))
+
+# -------------------------------------------------------------------------
+
+if not args.snapshots:
+    sys.exit()
+
+w, h = plt.figaspect(float(10 / 20.))
+
+for D in args.D_list:
+
+    fig, axes = plt.subplots(nrows=int(n_images / 2), ncols=2,
+                             sharey=True, sharex=True)
+    fig.set_size_inches(w * 2, h * int(n_images / 2))
+
+    for i in range(n_images):
+
+        ax = axes.flatten()[i]
+
+        snapshot(sim, i, D, args.method)
+        # sim.skyrmion_number(method='BergLuscher')
+
+        data = np.copy(sim.spin.reshape(-1, 3)[:, 2])
+
+        iplot = ax.scatter(coords[:, 0], coords[:, 1],
+                           c=data,
+                           cmap='gist_earth',
+                           s=10, marker='h', lw=0,
+                           vmin=-1, vmax=1
+                           )
+
+        # bbox_props = dict(boxstyle="circle,pad=0.2", lw=1, alpha=0.)
+        plt.text(0.05, 0.8, r'$' + str(i) + r'$',
+                 transform=ax.transAxes,
+                 fontsize=40,
+                 # bbox=bbox_props
+                 )
+
+        if i % 2 == 0:
+            ax.set_ylabel(r'$y\,(\mathrm{nm})$', fontsize=28)
+
+        ax.tick_params(axis='both', labelsize=28)
+
+    for i in [-1, -2]:
+        axes.flatten()[i].set_xlabel(r'$x\,(\mathrm{nm})$', fontsize=28)
+
+    plt.xlim([0, 79.9])
+    plt.ylim([2, 42])
+
+    cax, kw = matplotlib.colorbar.make_axes(axes.flatten()[0], location='top',
+                                            anchor=(1, 6.5))
+    c = plt.colorbar(iplot,
+                     cax=cax,
+                     orientation='horizontal')
+    c.ax.tick_params(labelsize=22)
+    axes.flatten()[0].set_title(r'$m_z$', fontsize=28, y=1.25)
+    c.set_ticks([-1, 0, 1])
+
+    # -------------------------------------------------------------------------
+
+    plt.subplots_adjust(hspace=0.0001, wspace=.0001)
+
+    plt.savefig(SAVEDIR + 'nebm_snapshots_D{}_k1e4_{}.pdf'.format(D, args.method),
+                bbox_inches='tight', dpi=100
+                )
