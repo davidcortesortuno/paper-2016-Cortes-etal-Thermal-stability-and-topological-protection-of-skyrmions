@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 RUN apt-get -y update 
 RUN apt-get install -y git python3 python3-pip gcc psutils cmake wget make
-RUN apt-get install -y gfortran libblas-dev liblapack-dev python3-tk
+RUN apt-get install -y gfortran libblas-dev liblapack-dev python3-tk sudo
 RUN pip3 install cython matplotlib pytest scipy psutil pyvtk ipywidgets
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
@@ -18,6 +18,17 @@ ENV LD_LIBRARY_PATH="/usr/local/fidimag/local/lib:$LD_LIBRARY_PATH"
 
 WORKDIR /usr/local/fidimag
 RUN python3 setup.py build_ext --inplace
+RUN python3 -c "import matplotlib"
 
 ENV OMP_NUM_THREADS=2
 WORKDIR /io
+
+# Set up user so that we do not run as root
+# (not necessary if we run docker with --user)
+# -s for shell, -m to create home directory, -G groups
+#
+# RUN useradd -m -s /bin/bash -G sudo fidimag && \
+#     echo "fidimag:docker" | chpasswd && \
+#     echo "fidimag ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# # -R recursive
+# RUN chown -R fidimag:fidimag /usr/local/fidimag
