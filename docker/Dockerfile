@@ -19,6 +19,8 @@ ENV LD_LIBRARY_PATH="/usr/local/fidimag/local/lib:$LD_LIBRARY_PATH"
 WORKDIR /usr/local/fidimag
 RUN python3 setup.py build_ext --inplace
 RUN python3 -c "import matplotlib"
+# Headless Matplotlib:
+ENV MPLBACKEND=Agg
 
 ENV OMP_NUM_THREADS=2
 WORKDIR /io
@@ -32,3 +34,4 @@ WORKDIR /io
 #     echo "fidimag ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # # -R recursive
 # RUN chown -R fidimag:fidimag /usr/local/fidimag
+

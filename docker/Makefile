@@ -10,13 +10,10 @@ image:
 
 # Clean all the images
 clean_images:
-	read -p "This will remove all Docker images. Are you sure? [Y/y/n] " -n 1 -r
-	echo
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
-		docker rmi $(docker images -a --filter=dangling=true -q)
-		docker rm $(docker ps --filter=status=exited --filter=status=created -q)
-	fi
+	echo "This will remove the Docker nebm image "
+	# docker rm `docker ps --filter=status=exited --filter=status=created -q`
+	# docker rmi `docker images -a --filter=dangling=true -q`
+	docker rmi -f nebm
 
 # -----------------------------------------------------------------------------
 
@@ -38,3 +35,8 @@ nebm_linear_interpolations:
 	cd ../sims && \
 		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
 		nebm /bin/bash -c "cd nebm/${NEBM_SIM_FOLDER} && bash initiate_simulation_climbing-23_k1e4.sh"
+
+plot_linear_interpolations:
+	cd ../ && \
+		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
+		nebm /bin/bash -c "python plot/plot_energy_bands.py"
