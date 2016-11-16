@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 RUN apt-get -y update 
 RUN apt-get install -y git python3 python3-pip gcc psutils cmake wget make
-RUN apt-get install -y gfortran libblas-dev liblapack-dev python3-tk sudo
+RUN apt-get install -y gfortran libblas-dev liblapack-dev python3-tk sudo fonts-lato
 RUN pip3 install cython matplotlib pytest scipy psutil pyvtk ipywidgets
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
