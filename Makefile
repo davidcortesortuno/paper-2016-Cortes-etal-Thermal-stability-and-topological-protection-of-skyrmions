@@ -2,7 +2,7 @@ example:
 	@echo "Building Docker container:"
 	@cd docker && make image
 	@echo "Running NEBM simulations for D = 0.721 meV (D = 3.2 mJ m **-2)"
-	@cd docker && make relaxation && make nebm && make plot_nebm
+	@cd docker && export DMI=32 && make relaxation && make nebm && make plot_nebm
 
 run_all:
 	@echo "Building Docker container:"

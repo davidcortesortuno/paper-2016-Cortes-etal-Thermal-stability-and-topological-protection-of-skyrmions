@@ -111,3 +111,52 @@ following the previous examples, if we want to run the simulation for
 ``D=0.721 meV``, we need to first run the corresponding **Skyrmion collapse**
 simulation and then the ``initiate_simulation_climbing-15_k1e4.sh`` script,
 which uses the 15th image of the band as climbing image.
+
+# Docker
+
+This repository also contains a Docker file to run a simple example or all the
+simulations to completely reproduce the data from the paper. We provide in the
+main folder a `Makefile` to automatically-easily run them.
+
+When trying to run any of the simulations, the first step of the script is to
+build a Docker container with Fidimag installed on it, together with all the
+necessary tools to produce the plots. You can take a look at the ``Makefile``
+in the ``docker/`` folder for details.
+
+By default, the simulations run with OpenMP using 2 threads.
+
+## Example
+
+A simple example produces the data for the case of a DMI constant of ``D = 0.721 meV`` 
+(equivalent to ``D = 3.2 mJ m**-2``). This can be called as simply as
+
+    make example
+
+These simulations reproduce the three afore mentioned transitions and two kind
+of plots for every case. One of the plots shows the energy band for the last
+step of the NEBM and the other is a sequence of snapshots of the NEBM band
+images, which shows the skyrmion destruction process. Specifically, the
+snapshots are the magnetisation field coloured according to the out of plane
+component (``z``) of the spins. The figures are saved in the ``nebm_figures``
+folder.
+
+Be aware that the system has a significant number of spins, thus the
+simulations will take a while to finish.
+
+## Paper data
+
+To obtain the paper data, running the three different simulations for every DMI value
+mentioned in the publication, the instruction is just to run
+
+    make run_all
+
+This process will probably take a couple of weeks to finish. If you want to use
+more than 2 threads for OpenMP, just edit the line in ``docker/Dockerfile``
+which says `ENV OMP_NUM_THREADS=2``.
+
+Every energy band will be plotted in separate files, but if you want to plot
+all the DMI cases (for a single transition) in a single file, you can call the
+plot library with `python plot/plot_energy_bands.py --D_list 26 28 32 ...`` for
+example. See the plot library for more details.
+
+

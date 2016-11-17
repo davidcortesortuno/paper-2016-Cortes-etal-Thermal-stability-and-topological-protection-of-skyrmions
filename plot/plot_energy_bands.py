@@ -42,6 +42,7 @@ if not os.path.exists(SAVEDIR):
     os.makedirs(SAVEDIR)
 
 # -----------------------------------------------------------------------------
+# Matplotlib styling
 
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Lato']
@@ -68,6 +69,7 @@ plt.rcParams['axes.formatter.use_mathtext'] = True
 plt.rcParams.update()
 
 
+# Colors
 def hex_to_rgb(value):
     value = value.lstrip('#')
     lv = len(value)
@@ -83,6 +85,7 @@ matplotlib.rcParams['axes.prop_cycle'] = cycler('color', d_palette1)
 
 # -----------------------------------------------------------------------------
 
+# DMI parameters:  micromagnetic 1e-4 J m**-2 TO atomistic meV
 DMIc = {}
 DMIc['26'] = -0.586
 DMIc['28'] = -0.631
@@ -92,6 +95,7 @@ DMIc['34'] = -0.766
 DMIc['36'] = -0.811
 DMIc['38'] = -0.856
 
+# Climbing images for the folders
 climbing_image = {}
 climbing_image['26'] = 21
 climbing_image['28'] = 21
@@ -101,11 +105,13 @@ climbing_image['34'] = 15
 climbing_image['36'] = 15
 
 
+# Get the last step from a NEBM simulation among smilar folders
 def last_step(name):
     step = re.search(r'(?<=GEODESIC_)\d+', name).group(0)
     return step
 
 
+# FOLDERS and base names:
 def base_name_geo(D, k):
     return (WORKDIR + '../sims/nebm/neb_stripe_320x185_Co_sk-down_fm-up_D{0}e-4_h25e-2nm_GEODESIC/'
             'neb_stripe_320x185_Co_sk-down_fm-up_D{0}e-4_h25e-2nm_k1e{1}_GEODESIC'.format(D, k)
@@ -170,6 +176,7 @@ interp_data = {}
 nebm_data = {}
 
 
+# Return a simulation folder according to the specified method
 def methods(method, D):
     if method == 'boundary':
         return base_folder_ba(D)
@@ -182,6 +189,8 @@ def methods(method, D):
 
 mesh = HexagonalMesh(0.125, 320, 185, unit_length=1e-9, alignment='square')
 
+# Generate the linear interpolations of the NEBM band from every DMI value from
+# the arguments
 for D in args.D_list:
 
     sim = Sim(mesh)
@@ -199,11 +208,13 @@ for D in args.D_list:
     nebm = NEBM_Geodesic(sim, images, spring_constant=1e4)
     l, E = nebm.compute_polynomial_approximation(500)
 
+    # Distances for every image from the first image (0th image)
     ll = [0]
     for i in range(len(nebm.distances)):
         ll.append(np.sum(nebm.distances[:i + 1]))
     ll = np.array(ll)
 
+    # Save the interpolation AND the images energy
     interp_data[D] = [l, (E - nebm.energies[0]) / eV, E - nebm.energies[0]]
     nebm_data[D] = [ll, (nebm.energies - nebm.energies[0]) / eV]
 
@@ -213,6 +224,7 @@ markers = ['o', '^', 's', '*', 'h', 'v']
 f = plt.figure(figsize=(8, 8/1.6))
 ax = f.add_subplot(111)
 
+# Try to plot for every DMI value in the script arguments
 for i, D in enumerate(args.D_list):
     c, = ax.plot(interp_data[D][0], interp_data[D][1], '-', lw=2)
     ax.plot(nebm_data[D][0], nebm_data[D][1], 'o', color=c.get_color(),
@@ -243,6 +255,11 @@ else:
                 bbox_inches='tight')
 
 # Snapshots -------------------------------------------------------------------
+
+# Do not plot if the option was not activated
+if not args.snapshots:
+    sys.exit()
+
 # We will use the simulation object created before (we only care for the
 # spins field and not the interactions)"
 coords = mesh.coordinates
@@ -257,9 +274,8 @@ n_images = len(os.listdir(methods(args.method, args.D_list[0])))
 
 # -------------------------------------------------------------------------
 
-if not args.snapshots:
-    sys.exit()
-
+# We will plot the snapshots of the NEBM band in a two column format plot
+# Try to do this for every DMI value
 w, h = plt.figaspect(float(10 / 20.))
 
 for D in args.D_list:
@@ -270,11 +286,9 @@ for D in args.D_list:
 
     for i in range(n_images):
 
+        # Get the axes for the i-th state
         ax = axes.flatten()[i]
-
         snapshot(sim, i, D, args.method)
-        # sim.skyrmion_number(method='BergLuscher')
-
         data = np.copy(sim.spin.reshape(-1, 3)[:, 2])
 
         iplot = ax.scatter(coords[:, 0], coords[:, 1],
@@ -291,14 +305,17 @@ for D in args.D_list:
                  # bbox=bbox_props
                  )
 
+        # Label only the left side column
         if i % 2 == 0:
             ax.set_ylabel(r'$y\,(\mathrm{nm})$', fontsize=28)
 
         ax.tick_params(axis='both', labelsize=28)
 
+    # Label the x axis for the bottom plots
     for i in [-1, -2]:
         axes.flatten()[i].set_xlabel(r'$x\,(\mathrm{nm})$', fontsize=28)
 
+    # A range to observe the skyrmion
     plt.xlim([0, 79.9])
     plt.ylim([2, 42])
 
@@ -313,8 +330,10 @@ for D in args.D_list:
 
     # -------------------------------------------------------------------------
 
+    # Remove spacing between subplots
     plt.subplots_adjust(hspace=0.0001, wspace=.0001)
 
+    # Sve according to DMI value
     plt.savefig(SAVEDIR + 'nebm_snapshots_D{}_k1e4_{}.pdf'.format(D, args.method),
                 bbox_inches='tight', dpi=100
                 )
