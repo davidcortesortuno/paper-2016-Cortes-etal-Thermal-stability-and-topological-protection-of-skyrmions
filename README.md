@@ -140,6 +140,15 @@ snapshots are the magnetisation field coloured according to the out of plane
 component (``z``) of the spins. The figures are saved in the ``nebm_figures``
 folder.
 
+The plot for the energy band when using linear interpolations as initial state
+is:
+
+![](figs/example_energy_band.png)
+
+And the snapshots look like
+
+![](figs/nebm_example_snapshots.jpg)
+
 Be aware that the system has a significant number of spins, thus the
 simulations will take a while to finish.
 
@@ -158,5 +167,3 @@ Every energy band will be plotted in separate files, but if you want to plot
 all the DMI cases (for a single transition) in a single file, you can call the
 plot library with `python plot/plot_energy_bands.py --D_list 26 28 32 ...`` for
 example. See the plot library for more details.
-
-

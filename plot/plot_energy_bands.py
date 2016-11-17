@@ -333,7 +333,7 @@ for D in args.D_list:
     # Remove spacing between subplots
     plt.subplots_adjust(hspace=0.0001, wspace=.0001)
 
-    # Sve according to DMI value
-    plt.savefig(SAVEDIR + 'nebm_snapshots_D{}_k1e4_{}.pdf'.format(D, args.method),
+    # Save according to DMI value
+    plt.savefig(SAVEDIR + 'nebm_snapshots_D{}_k1e4_{}.png'.format(D, args.method),
                 bbox_inches='tight', dpi=100
                 )

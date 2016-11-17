@@ -33,6 +33,10 @@ clean_images:
 # -t run a pseudo TTY, -d detach to run in the background
 # -u is to run as user:group so files are not owned by root (somehow it is
 # important to run the commands with -t) 
+
+# The relaxation is necessary to be run first, in order to obtain the skyrmion
+# and ferromagnetic states. These states are fixed at the extremes of the
+# energy band
 relaxation:
 	@echo "Starting relaxation of states for D = ${DMI}e-4 Jm**-2"
 	@echo "------------------------------------------------------"
@@ -42,6 +46,15 @@ relaxation:
 	@cd ../sims/relaxation && \
 		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
 		nebm /bin/bash -c "bash ${SIM_SK_FILE}"
+
+# Run three different kind of simulations for the specified DMI value
+#
+# 1., 2. The skyrmion annihilation at the boundary requires to manually generate
+# the initial state for the NEBM. This transition is given in the first two steps.
+#
+# 3. The third step is the NEBM simulation when starting from linear interpolations
+#
+# 4. The fourth step is the Climbing Image applied to the band of step 3.
 
 nebm:
 	@echo "Starting simulations for D = ${DMI}e-4 Jm**-2"
@@ -59,6 +72,7 @@ nebm:
 		docker run -t -v `pwd`:/io -u `id -u`:`id -g` \
 		nebm /bin/bash -c "cd nebm/${NEBM_SIM_FOLDER} && bash initiate_simulation_climbing-${CI}_k1e4.sh"
 
+# Plot the energy band and the snapshots for each of the three NEBM transitions
 plot_nebm:
 	@echo "Plotting data from NEBM simulation with D = ${DMI}e-4 Jm**-2"
 	@echo "------------------------------------------------------------"
