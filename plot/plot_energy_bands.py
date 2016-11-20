@@ -271,6 +271,9 @@ def snapshot(sim, image, D, method):
                       ))
 
 n_images = len(os.listdir(methods(args.method, args.D_list[0])))
+n_plots = n_images
+if n_images % 2 != 0:
+    n_plots += 1
 
 # -------------------------------------------------------------------------
 
@@ -280,9 +283,9 @@ w, h = plt.figaspect(float(10 / 20.))
 
 for D in args.D_list:
 
-    fig, axes = plt.subplots(nrows=int(n_images / 2), ncols=2,
+    fig, axes = plt.subplots(nrows=int(n_plots / 2), ncols=2,
                              sharey=True, sharex=True)
-    fig.set_size_inches(w * 2, h * int(n_images / 2))
+    fig.set_size_inches(w * 2, h * int(n_plots / 2))
 
     for i in range(n_images):
 

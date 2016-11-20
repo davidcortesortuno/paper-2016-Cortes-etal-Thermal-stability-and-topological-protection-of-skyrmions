@@ -136,7 +136,7 @@ parser.add_argument('--unit_length', help='Mesh unit length',
                     type=float, default=1.0)
 
 parser.add_argument('--alpha', help='Damping constant value',
-                    type=float, default=0.01)
+                    type=float, default=0.1)
 
 parser.add_argument('--save_files', help='Save vtk and npy files every x'
                     ' steps',
