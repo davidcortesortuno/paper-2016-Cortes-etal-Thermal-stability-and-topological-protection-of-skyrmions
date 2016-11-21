@@ -1,3 +1,5 @@
+[![DOI](https://www.zenodo.org/badge/73332983.svg)](https://www.zenodo.org/badge/latestdoi/73332983)
+
 # NEBM Simulations
 
 This repository contains all the necessary scripts to run the Nudged Elastic
